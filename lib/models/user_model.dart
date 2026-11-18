@@ -1,3 +1,4 @@
+/// Representa um usuário cadastrado no aplicativo.
 class UserModel {
   final int? id;
   final String name;
@@ -15,6 +16,7 @@ class UserModel {
     required this.createdAt,
   });
 
+  /// Cria um [UserModel] a partir de uma linha retornada pelo SQLite.
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
       id: map['id'] as int?,
@@ -26,6 +28,7 @@ class UserModel {
     );
   }
 
+  /// Converte o usuário para um mapa compatível com o SQLite.
   Map<String, dynamic> toMap() {
     return {
       if (id != null) 'id': id,

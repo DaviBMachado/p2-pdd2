@@ -4,6 +4,7 @@ import 'package:taskflow/services/database_service.dart';
 import 'package:taskflow/theme/app_theme.dart';
 import 'package:taskflow/widgets/task_form.dart';
 
+/// Tela usada tanto para criar uma nova tarefa quanto para editar uma existente.
 class TaskFormScreen extends StatefulWidget {
   final int userId;
   final TaskModel? task;
@@ -23,6 +24,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
 
   bool get _isEditing => widget.task != null;
 
+  /// Salva a tarefa criada ou editada no SQLite e retorna para a Home.
   Future<void> _handleSubmit(
     String title,
     String? description,

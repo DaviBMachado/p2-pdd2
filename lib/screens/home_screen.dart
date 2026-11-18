@@ -10,8 +10,10 @@ import 'package:taskflow/widgets/task_card.dart';
 import 'login_screen.dart';
 import 'task_form_screen.dart';
 
+/// Filtros de exibição disponíveis na barra inferior da Home.
 enum _TaskFilter { all, pending, completed }
 
+/// Tela principal com contadores, filtros e lista de tarefas do usuário.
 class HomeScreen extends StatefulWidget {
   final UserModel user;
 
@@ -36,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _loadTasks();
   }
 
+  /// Redireciona para a tela de login limpando a pilha de navegação.
   void _redirectToLogin() {
     if (!mounted) return;
     Navigator.of(context).pushAndRemoveUntil(
@@ -44,6 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Carrega do SQLite todas as tarefas do usuário autenticado.
   Future<void> _loadTasks() async {
     final userId = widget.user.id;
     if (userId == null) {
@@ -68,11 +72,13 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  /// Encerra a sessão atual e volta para a tela de login.
   Future<void> _logout() async {
     await AuthService.instance.logout();
     _redirectToLogin();
   }
 
+  /// Abre o formulário para criar uma nova tarefa ou editar uma existente.
   Future<void> _openTaskForm([TaskModel? task]) async {
     final userId = widget.user.id;
     if (userId == null) {
@@ -90,6 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  /// Alterna o status da tarefa entre pendente e concluída no banco.
   Future<void> _toggleTask(TaskModel task) async {
     final userId = widget.user.id;
     final taskId = task.id;
@@ -111,6 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  /// Solicita confirmação e exclui a tarefa selecionada do banco.
   Future<void> _confirmDelete(TaskModel task) async {
     final userId = widget.user.id;
     final taskId = task.id;
@@ -155,6 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  /// Retorna as tarefas filtradas conforme a aba selecionada.
   List<TaskModel> get _filteredTasks => switch (_filter) {
         _TaskFilter.all => _tasks,
         _TaskFilter.pending => _tasks.where((t) => !t.isCompleted).toList(),

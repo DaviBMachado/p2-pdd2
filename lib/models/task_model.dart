@@ -1,3 +1,4 @@
+/// Representa uma tarefa pertencente a um usuário.
 class TaskModel {
   final int? id;
   final int userId;
@@ -19,12 +20,14 @@ class TaskModel {
     required this.updatedAt,
   });
 
+  /// Retorna o rótulo legível correspondente ao nível de prioridade (1 a 3).
   String get priorityLabel => switch (priority) {
         3 => 'Alta',
         2 => 'Média',
         _ => 'Baixa',
       };
 
+  /// Cria uma [TaskModel] a partir de uma linha retornada pelo SQLite.
   factory TaskModel.fromMap(Map<String, dynamic> map) {
     return TaskModel(
       id: map['id'] as int?,
@@ -38,6 +41,7 @@ class TaskModel {
     );
   }
 
+  /// Converte a tarefa para um mapa compatível com o SQLite.
   Map<String, dynamic> toMap() {
     return {
       if (id != null) 'id': id,
@@ -51,6 +55,7 @@ class TaskModel {
     };
   }
 
+  /// Retorna uma cópia da tarefa com os campos informados alterados.
   TaskModel copyWith({
     int? id,
     int? userId,

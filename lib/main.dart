@@ -5,11 +5,14 @@ import 'package:taskflow/screens/login_screen.dart';
 import 'package:taskflow/services/auth_service.dart';
 import 'package:taskflow/theme/app_theme.dart';
 
+/// Ponto de entrada do aplicativo.
 void main() {
+  // Garante que o binding do Flutter esteja pronto antes de acessar plugins nativos.
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const TaskFlowApp());
 }
 
+/// Widget raiz que configura o tema e define a tela inicial.
 class TaskFlowApp extends StatelessWidget {
   const TaskFlowApp({super.key});
 
@@ -24,6 +27,7 @@ class TaskFlowApp extends StatelessWidget {
   }
 }
 
+/// Verifica se existe um usuário autenticado e direciona para a Home ou Login.
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
 

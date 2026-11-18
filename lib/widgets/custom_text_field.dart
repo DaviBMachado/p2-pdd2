@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Campo de texto reutilizável com suporte a validação e exibição de senha.
 class CustomTextField extends StatefulWidget {
   final TextEditingController? controller;
   final String label;

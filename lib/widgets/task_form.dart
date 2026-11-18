@@ -3,6 +3,7 @@ import 'package:taskflow/models/task_model.dart';
 import 'package:taskflow/theme/app_theme.dart';
 import 'package:taskflow/widgets/custom_text_field.dart';
 
+/// Formulário reutilizável para preencher ou editar os dados de uma tarefa.
 class TaskForm extends StatefulWidget {
   final TaskModel? initialTask;
   final bool isLoading;
@@ -55,6 +56,7 @@ class _TaskFormState extends State<TaskForm> {
     super.dispose();
   }
 
+  /// Valida os campos e envia os dados normalizados para a tela pai.
   void _submit() {
     if (widget.isLoading || !(_formKey.currentState?.validate() ?? false)) {
       return;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Paleta de cores usada em todo o aplicativo.
 abstract final class AppColors {
   static const Color background = Color(0xFFF4EBD8);
   static const Color surface = Color(0xFFFFF9ED);
@@ -10,6 +11,7 @@ abstract final class AppColors {
   static const Color border = Color(0xFFB8A98E);
 }
 
+/// Tokens de espaçamento, estilos compartilhados e tema Material 3 do app.
 abstract final class AppTheme {
   static const double spacingSm = 8.0;
   static const double spacingMd = 16.0;
@@ -71,6 +73,7 @@ abstract final class AppTheme {
     labelSmall: TextStyle(fontFamily: 'SpaceMono', fontWeight: FontWeight.w400, color: AppColors.text),
   );
 
+  /// Tema principal aplicado ao [MaterialApp].
   static ThemeData get retroAnalog {
     return ThemeData(
       useMaterial3: true,

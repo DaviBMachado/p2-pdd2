@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:taskflow/models/task_model.dart';
 import 'package:taskflow/theme/app_theme.dart';
 
+/// Cartão que mostra resumo, prioridade, data e ações de uma tarefa.
 class TaskCard extends StatelessWidget {
   final TaskModel task;
   final VoidCallback onToggleStatus;
@@ -16,12 +17,14 @@ class TaskCard extends StatelessWidget {
     required this.onDelete,
   });
 
+  /// Retorna o texto e as cores da etiqueta conforme a prioridade (1 a 3).
   (String, Color, Color) _priorityBadge(int priority) => switch (priority) {
         3 => ('ALTA', AppColors.primary, AppColors.surface),
         2 => ('MÉDIA', AppColors.secondary, AppColors.text),
         _ => ('BAIXA', AppColors.accent, AppColors.surface),
       };
 
+  /// Formata a data no padrão DD/MM/AAAA.
   String _formatDate(DateTime date) {
     final day = date.day.toString().padLeft(2, '0');
     final month = date.month.toString().padLeft(2, '0');

@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:taskflow/services/auth_service.dart';
 import 'package:taskflow/theme/app_theme.dart';
 import 'package:taskflow/widgets/custom_text_field.dart';
+import 'package:taskflow/widgets/error_banner.dart';
 
 import 'home_screen.dart';
 import 'register_screen.dart';
 
+/// Tela de login com validação de formulário e tratamento de erros.
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -21,8 +23,6 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
   String? _errorMessage;
 
-  static final _emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-
   @override
   void dispose() {
     _emailController.dispose();
@@ -30,6 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  /// Valida os campos, autentica o usuário e navega para a Home.
   Future<void> _submit() async {
     if (_isLoading || !(_formKey.currentState?.validate() ?? false)) {
       return;
@@ -101,16 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             keyboardType: TextInputType.emailAddress,
                             textInputAction: TextInputAction.next,
                             prefixIcon: Icons.email_outlined,
-                            validator: (value) {
-                              final trimmed = value?.trim() ?? '';
-                              if (trimmed.isEmpty) {
-                                return 'Informe seu e-mail';
-                              }
-                              if (!_emailRegex.hasMatch(trimmed)) {
-                                return 'Informe um e-mail válido';
-                              }
-                              return null;
-                            },
+                            validator: AuthService.validateEmail,
                           ),
                           const SizedBox(height: AppTheme.spacingMd),
                           CustomTextField(
@@ -126,22 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           if (_errorMessage != null) ...[
                             const SizedBox(height: AppTheme.spacingMd),
-                            Container(
-                              padding: const EdgeInsets.all(AppTheme.spacingSm),
-                              decoration: BoxDecoration(
-                                color: AppColors.secondary,
-                                borderRadius:
-                                    BorderRadius.circular(AppTheme.radiusMd),
-                                border: Border.all(color: AppColors.primary),
-                              ),
-                              child: Text(
-                                _errorMessage!,
-                                style: textTheme.bodySmall?.copyWith(
-                                  color: AppColors.text,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
+                            ErrorBanner(message: _errorMessage!),
                           ],
                           const SizedBox(height: AppTheme.spacingMd * 1.25),
                           ElevatedButton(

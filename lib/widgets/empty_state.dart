@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:taskflow/theme/app_theme.dart';
 
+/// Exibe uma mensagem amigável quando não há tarefas para mostrar.
 class EmptyState extends StatelessWidget {
   final String title;
   final String subtitle;

@@ -6,18 +6,21 @@ import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import '../models/task_model.dart';
 import '../models/user_model.dart';
 
+/// Gerencia a conexão com o banco SQLite e as operações de usuários e tarefas.
 class DatabaseService {
   DatabaseService._internal();
 
   static final DatabaseService instance = DatabaseService._internal();
   static Database? _database;
 
+  /// Retorna a instância aberta do banco, inicializando na primeira chamada.
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDatabase();
     return _database!;
   }
 
+  /// Abre o banco SQLite usando o driver adequado para Web ou dispositivos nativos.
   Future<Database> _initDatabase() async {
     if (kIsWeb) {
       databaseFactory = databaseFactoryFfiWeb;
@@ -36,10 +39,12 @@ class DatabaseService {
     );
   }
 
+  /// Habilita chaves estrangeiras ao abrir a conexão com o SQLite.
   Future<void> _onConfigure(Database db) async {
     await db.execute('PRAGMA foreign_keys = ON');
   }
 
+  /// Cria as tabelas iniciais de usuários, tarefas e o índice de busca.
   Future<void> _onCreate(Database db, int version) async {
     await db.execute('''
       CREATE TABLE users (
@@ -71,6 +76,7 @@ class DatabaseService {
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {}
 
+  /// Executa uma operação no banco padronizando o tratamento de erros.
   Future<T> _guard<T>(String operation, Future<T> Function(Database db) fn) async {
     try {
       final db = await database;
@@ -82,12 +88,14 @@ class DatabaseService {
 
   // --- Users ---
 
+  /// Insere um novo usuário e retorna o ID gerado.
   Future<int> insertUser(UserModel user) {
     return _guard('inserir usuário', (db) {
       return db.insert('users', user.toMap());
     });
   }
 
+  /// Busca um usuário pelo e-mail; retorna null se não existir.
   Future<UserModel?> getUserByEmail(String email) {
     return _guard('buscar usuário por e-mail', (db) async {
       final rows = await db.query(
@@ -101,6 +109,7 @@ class DatabaseService {
     });
   }
 
+  /// Busca um usuário pelo ID; retorna null se não existir.
   Future<UserModel?> getUserById(int id) {
     return _guard('buscar usuário por id', (db) async {
       final rows = await db.query(
@@ -116,12 +125,14 @@ class DatabaseService {
 
   // --- Tasks ---
 
+  /// Insere uma nova tarefa e retorna o ID gerado.
   Future<int> insertTask(TaskModel task) {
     return _guard('inserir tarefa', (db) {
       return db.insert('tasks', task.toMap());
     });
   }
 
+  /// Lista as tarefas do usuário ordenadas por status, prioridade e criação.
   Future<List<TaskModel>> getTasksByUser(int userId) {
     return _guard('listar tarefas do usuário', (db) async {
       final rows = await db.query(
@@ -134,6 +145,7 @@ class DatabaseService {
     });
   }
 
+  /// Atualiza os dados de uma tarefa garantindo que pertença ao usuário.
   Future<int> updateTask(TaskModel task) {
     final taskId = task.id;
     if (taskId == null) {
@@ -150,6 +162,7 @@ class DatabaseService {
     });
   }
 
+  /// Alterna apenas o status de conclusão da tarefa do usuário.
   Future<int> toggleTaskStatus(int taskId, int userId, bool isCompleted) {
     return _guard('alternar status da tarefa', (db) {
       return db.update(
@@ -164,6 +177,7 @@ class DatabaseService {
     });
   }
 
+  /// Exclui uma tarefa pelo ID garantindo que pertença ao usuário.
   Future<int> deleteTask(int taskId, int userId) {
     return _guard('excluir tarefa', (db) {
       return db.delete(

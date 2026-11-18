@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:taskflow/services/auth_service.dart';
 import 'package:taskflow/theme/app_theme.dart';
 import 'package:taskflow/widgets/custom_text_field.dart';
+import 'package:taskflow/widgets/error_banner.dart';
 
 import 'home_screen.dart';
 
+/// Tela de cadastro de novos usuários.
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -22,8 +24,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isLoading = false;
   String? _errorMessage;
 
-  static final _emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-
   @override
   void dispose() {
     _nameController.dispose();
@@ -33,6 +33,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
+  /// Valida os campos, cria a conta no banco e navega para a Home.
   Future<void> _submit() async {
     if (_isLoading || !(_formKey.currentState?.validate() ?? false)) {
       return;
@@ -74,8 +75,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-
     return Scaffold(
       appBar: AppBar(title: const Text('Criar conta')),
       body: SafeArea(
@@ -111,16 +110,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
                         prefixIcon: Icons.email_outlined,
-                        validator: (value) {
-                          final trimmed = value?.trim() ?? '';
-                          if (trimmed.isEmpty) {
-                            return 'Informe seu e-mail';
-                          }
-                          if (!_emailRegex.hasMatch(trimmed)) {
-                            return 'Informe um e-mail válido';
-                          }
-                          return null;
-                        },
+                        validator: AuthService.validateEmail,
                       ),
                       const SizedBox(height: AppTheme.spacingMd),
                       CustomTextField(
@@ -153,22 +143,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       if (_errorMessage != null) ...[
                         const SizedBox(height: AppTheme.spacingMd),
-                        Container(
-                          padding: const EdgeInsets.all(AppTheme.spacingSm),
-                          decoration: BoxDecoration(
-                            color: AppColors.secondary,
-                            borderRadius:
-                                BorderRadius.circular(AppTheme.radiusMd),
-                            border: Border.all(color: AppColors.primary),
-                          ),
-                          child: Text(
-                            _errorMessage!,
-                            style: textTheme.bodySmall?.copyWith(
-                              color: AppColors.text,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
+                        ErrorBanner(message: _errorMessage!),
                       ],
                       const SizedBox(height: AppTheme.spacingMd * 1.25),
                       ElevatedButton(

@@ -112,7 +112,10 @@ class TaskCard extends StatelessWidget {
                         ),
                       ],
                       const SizedBox(height: AppTheme.spacingSm),
-                      Row(
+                      Wrap(
+                        spacing: AppTheme.spacingSm,
+                        runSpacing: 4,
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -136,7 +139,37 @@ class TaskCard extends StatelessWidget {
                               ),
                             ),
                           ),
-                          const SizedBox(width: AppTheme.spacingSm),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.secondary,
+                              borderRadius: BorderRadius.circular(4),
+                              border: Border.all(color: AppColors.border),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  task.category.icon,
+                                  size: 12,
+                                  color: task.category == TaskCategory.other
+                                      ? AppColors.text
+                                      : task.category.color,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  task.category.label,
+                                  style: textTheme.labelSmall?.copyWith(
+                                    color: AppColors.text,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                           Text(
                             _formatDate(task.createdAt),
                             style: textTheme.labelSmall,

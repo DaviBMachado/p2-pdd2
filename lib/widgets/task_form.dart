@@ -12,6 +12,7 @@ class TaskForm extends StatefulWidget {
     String? description,
     int priority,
     bool isCompleted,
+    TaskCategory category,
   ) onSubmit;
 
   const TaskForm({
@@ -31,6 +32,7 @@ class _TaskFormState extends State<TaskForm> {
   late final TextEditingController _descriptionController;
   late int _priority;
   late bool _isCompleted;
+  late TaskCategory _category;
 
   static const _priorities = [
     (1, 'Baixa', AppColors.accent, AppColors.surface),
@@ -47,6 +49,7 @@ class _TaskFormState extends State<TaskForm> {
     );
     _priority = widget.initialTask?.priority ?? 2;
     _isCompleted = widget.initialTask?.isCompleted ?? false;
+    _category = widget.initialTask?.category ?? TaskCategory.other;
   }
 
   @override
@@ -63,7 +66,13 @@ class _TaskFormState extends State<TaskForm> {
     }
     final title = _titleController.text.trim();
     final desc = _descriptionController.text.trim();
-    widget.onSubmit(title, desc.isEmpty ? null : desc, _priority, _isCompleted);
+    widget.onSubmit(
+      title,
+      desc.isEmpty ? null : desc,
+      _priority,
+      _isCompleted,
+      _category,
+    );
   }
 
   @override
@@ -112,6 +121,23 @@ class _TaskFormState extends State<TaskForm> {
                   ),
                 ),
               ],
+            ],
+          ),
+          const SizedBox(height: AppTheme.spacingMd),
+          Text('Categoria', style: textTheme.labelLarge),
+          const SizedBox(height: AppTheme.spacingSm),
+          Wrap(
+            spacing: AppTheme.spacingSm,
+            runSpacing: AppTheme.spacingSm,
+            children: [
+              for (final cat in TaskCategory.values)
+                _CategoryOption(
+                  category: cat,
+                  selected: _category == cat,
+                  onTap: widget.isLoading
+                      ? null
+                      : () => setState(() => _category = cat),
+                ),
             ],
           ),
           const SizedBox(height: AppTheme.spacingMd),
@@ -198,6 +224,63 @@ class _PriorityOption extends StatelessWidget {
                 color: selected ? selectedFg : AppColors.text,
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CategoryOption extends StatelessWidget {
+  final TaskCategory category;
+  final bool selected;
+  final VoidCallback? onTap;
+
+  const _CategoryOption({
+    required this.category,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final fg = selected && category != TaskCategory.other
+        ? AppColors.surface
+        : AppColors.text;
+    final bg = selected
+        ? (category == TaskCategory.other ? AppColors.secondary : category.color)
+        : AppColors.surface;
+
+    return Material(
+      color: bg,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        side: BorderSide(
+          color: selected && category != TaskCategory.other
+              ? category.color
+              : AppColors.border,
+          width: selected ? 1.5 : 1,
+        ),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppTheme.spacingSm * 1.5,
+            vertical: 10,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(category.icon, size: 16, color: fg),
+              const SizedBox(width: 6),
+              Text(
+                category.label,
+                style: textTheme.labelMedium?.copyWith(color: fg),
+              ),
+            ],
           ),
         ),
       ),

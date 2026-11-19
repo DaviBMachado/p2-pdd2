@@ -26,6 +26,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   List<TaskModel> _tasks = const [];
   _TaskFilter _filter = _TaskFilter.all;
+  TaskCategory? _selectedCategory;
   bool _isLoading = true;
 
   @override
@@ -163,12 +164,19 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  /// Retorna as tarefas filtradas conforme a aba selecionada.
-  List<TaskModel> get _filteredTasks => switch (_filter) {
-        _TaskFilter.all => _tasks,
-        _TaskFilter.pending => _tasks.where((t) => !t.isCompleted).toList(),
-        _TaskFilter.completed => _tasks.where((t) => t.isCompleted).toList(),
+  /// Retorna as tarefas filtradas pela aba do Retro Dock e pela categoria.
+  List<TaskModel> get _filteredTasks {
+    return _tasks.where((t) {
+      final matchesStatus = switch (_filter) {
+        _TaskFilter.all => true,
+        _TaskFilter.pending => !t.isCompleted,
+        _TaskFilter.completed => t.isCompleted,
       };
+      final matchesCategory =
+          _selectedCategory == null || t.category == _selectedCategory;
+      return matchesStatus && matchesCategory;
+    }).toList();
+  }
 
   Widget _buildEmptyState() {
     if (_tasks.isEmpty) {
@@ -178,6 +186,14 @@ class _HomeScreenState extends State<HomeScreen> {
         subtitle: 'Crie sua primeira tarefa para começar o dia.',
         actionLabel: 'Nova tarefa',
         onAction: () => _openTaskForm(),
+      );
+    }
+
+    if (_selectedCategory != null) {
+      return EmptyState(
+        icon: _selectedCategory!.icon,
+        title: 'Nenhuma tarefa em ${_selectedCategory!.label}',
+        subtitle: 'Limpe o filtro ou crie uma tarefa nesta categoria.',
       );
     }
 
@@ -233,7 +249,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 AppTheme.spacingMd,
                 AppTheme.spacingSm,
                 AppTheme.spacingMd,
-                AppTheme.spacingMd,
+                AppTheme.spacingSm,
               ),
               child: Row(
                 children: [
@@ -259,6 +275,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
+            _CategoryFilterBar(
+              selected: _selectedCategory,
+              onSelect: (cat) => setState(() => _selectedCategory = cat),
+            ),
+            const SizedBox(height: AppTheme.spacingSm),
             Expanded(
               child: _isLoading
                   ? const Center(
@@ -305,6 +326,76 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: _RetroDock(
         selected: _filter,
         onSelect: (filter) => setState(() => _filter = filter),
+      ),
+    );
+  }
+}
+
+class _CategoryFilterBar extends StatelessWidget {
+  final TaskCategory? selected;
+  final ValueChanged<TaskCategory?> onSelect;
+
+  const _CategoryFilterBar({
+    required this.selected,
+    required this.onSelect,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    Widget chip(String label, IconData? icon, TaskCategory? value) {
+      final isSelected = selected == value;
+      return Material(
+        color: isSelected ? AppColors.primary : AppColors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+          side: BorderSide(
+            color: isSelected ? AppColors.primary : AppColors.border,
+          ),
+        ),
+        child: InkWell(
+          onTap: () => onSelect(value),
+          borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (icon != null) ...[
+                  Icon(
+                    icon,
+                    size: 14,
+                    color: isSelected ? AppColors.surface : AppColors.text,
+                  ),
+                  const SizedBox(width: 6),
+                ],
+                Text(
+                  label,
+                  style: textTheme.labelSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: isSelected ? AppColors.surface : AppColors.text,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return SizedBox(
+      height: 36,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingMd),
+        children: [
+          chip('Todas', null, null),
+          for (final cat in TaskCategory.values) ...[
+            const SizedBox(width: AppTheme.spacingSm),
+            chip(cat.label, cat.icon, cat),
+          ],
+        ],
       ),
     );
   }

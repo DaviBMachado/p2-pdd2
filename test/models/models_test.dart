@@ -42,21 +42,32 @@ void main() {
       description: 'SQLite',
       priority: 3,
       isCompleted: true,
+      category: TaskCategory.study,
       createdAt: created,
       updatedAt: updated,
     );
 
     final map = task.toMap();
     expect(map['is_completed'], 1);
+    expect(map['category'], 'study');
     expect(task.priorityLabel, 'Alta');
 
     final restored = TaskModel.fromMap({...map, 'description': null});
     expect(restored.description, '');
     expect(restored.isCompleted, isTrue);
+    expect(restored.category, TaskCategory.study);
 
-    final toggled = restored.copyWith(isCompleted: false, priority: 2);
+    final fallback = TaskModel.fromMap({...map, 'category': 'invalida'});
+    expect(fallback.category, TaskCategory.other);
+
+    final toggled = restored.copyWith(
+      isCompleted: false,
+      priority: 2,
+      category: TaskCategory.work,
+    );
     expect(toggled.isCompleted, isFalse);
     expect(toggled.priorityLabel, 'Média');
+    expect(toggled.category, TaskCategory.work);
     expect(toggled.copyWith(priority: 1).priorityLabel, 'Baixa');
   });
 }

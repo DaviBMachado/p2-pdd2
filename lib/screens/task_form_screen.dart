@@ -30,6 +30,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
     String? description,
     int priority,
     bool isCompleted,
+    TaskCategory category,
   ) async {
     setState(() => _isLoading = true);
 
@@ -41,6 +42,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
           description: description ?? '',
           priority: priority,
           isCompleted: isCompleted,
+          category: category,
           updatedAt: now,
         );
         await DatabaseService.instance.updateTask(updated);
@@ -52,6 +54,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
             description: description ?? '',
             priority: priority,
             isCompleted: isCompleted,
+            category: category,
             createdAt: now,
             updatedAt: now,
           ),

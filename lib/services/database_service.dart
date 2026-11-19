@@ -32,7 +32,7 @@ class DatabaseService {
 
     return openDatabase(
       path,
-      version: 1,
+      version: 2,
       onConfigure: _onConfigure,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
@@ -65,6 +65,7 @@ class DatabaseService {
         description TEXT NOT NULL DEFAULT '',
         priority INTEGER NOT NULL DEFAULT 2,
         is_completed INTEGER NOT NULL DEFAULT 0,
+        category TEXT NOT NULL DEFAULT 'other',
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL,
         FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
@@ -74,7 +75,14 @@ class DatabaseService {
     await db.execute('CREATE INDEX idx_tasks_user_id ON tasks (user_id)');
   }
 
-  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {}
+  /// Executa migrações incrementais de schema ao atualizar a versão do banco.
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute(
+        "ALTER TABLE tasks ADD COLUMN category TEXT NOT NULL DEFAULT 'other'",
+      );
+    }
+  }
 
   /// Executa uma operação no banco padronizando o tratamento de erros.
   Future<T> _guard<T>(String operation, Future<T> Function(Database db) fn) async {

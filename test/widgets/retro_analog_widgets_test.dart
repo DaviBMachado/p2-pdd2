@@ -50,6 +50,7 @@ void main() {
       description: 'Capítulo 1',
       priority: 3,
       isCompleted: true,
+      category: TaskCategory.study,
       createdAt: DateTime(2026, 11, 18),
       updatedAt: DateTime(2026, 11, 18),
     );
@@ -62,6 +63,7 @@ void main() {
     )));
 
     expect(find.text('ALTA'), findsOneWidget);
+    expect(find.text('Faculdade'), findsOneWidget);
     expect(find.text('18/11/2026'), findsOneWidget);
     await tester.tap(find.byTooltip('Marcar como pendente'));
     await tester.tap(find.byTooltip('Excluir tarefa'));
@@ -71,16 +73,18 @@ void main() {
     expect(tapped, isTrue);
   });
 
-  testWidgets('TaskForm validates title, defaults to Média/Pendente, and pre-fills edit', (tester) async {
+  testWidgets('TaskForm validates title, defaults to Média/Pendente/Outro, and pre-fills edit', (tester) async {
     String? submittedTitle;
     int? submittedPriority;
     bool? submittedCompleted;
+    TaskCategory? submittedCategory;
 
     await tester.pumpWidget(_wrap(TaskForm(
-      onSubmit: (title, _, priority, isCompleted) {
+      onSubmit: (title, _, priority, isCompleted, category) {
         submittedTitle = title;
         submittedPriority = priority;
         submittedCompleted = isCompleted;
+        submittedCategory = category;
       },
     )));
 
@@ -89,11 +93,14 @@ void main() {
     expect(find.text('Informe o título da tarefa'), findsOneWidget);
 
     await tester.enterText(find.byType(TextFormField).first, '  Nova tarefa  ');
+    await tester.tap(find.text('Trabalho'));
+    await tester.pump();
     await tester.tap(find.text('Salvar'));
     await tester.pump();
     expect(submittedTitle, 'Nova tarefa');
     expect(submittedPriority, 2);
     expect(submittedCompleted, isFalse);
+    expect(submittedCategory, TaskCategory.work);
 
     final existing = TaskModel(
       id: 2,
@@ -102,6 +109,7 @@ void main() {
       description: 'Desc',
       priority: 3,
       isCompleted: true,
+      category: TaskCategory.personal,
       createdAt: DateTime(2026, 11, 18),
       updatedAt: DateTime(2026, 11, 18),
     );
@@ -110,7 +118,7 @@ void main() {
       key: const ValueKey('edit'),
       initialTask: existing,
       isLoading: true,
-      onSubmit: (_, _, _, _) {},
+      onSubmit: (_, _, _, _, _) {},
     )));
     expect(find.text('Existente'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsOneWidget);

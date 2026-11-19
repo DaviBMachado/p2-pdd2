@@ -21,6 +21,7 @@ class TaskModel {
   final int userId;
   final String title;
   final String description;
+  final String location;
   final int priority;
   final bool isCompleted;
   final TaskCategory category;
@@ -32,6 +33,7 @@ class TaskModel {
     required this.userId,
     required this.title,
     this.description = '',
+    this.location = '',
     this.priority = 2,
     this.isCompleted = false,
     this.category = TaskCategory.other,
@@ -62,6 +64,7 @@ class TaskModel {
       userId: map['user_id'] as int,
       title: map['title'] as String,
       description: (map['description'] as String?) ?? '',
+      location: (map['location'] as String?) ?? '',
       priority: map['priority'] as int,
       isCompleted: (map['is_completed'] as int) == 1,
       category: _parseCategory(map['category']),
@@ -77,6 +80,7 @@ class TaskModel {
       'user_id': userId,
       'title': title,
       'description': description,
+      'location': location,
       'priority': priority,
       'is_completed': isCompleted ? 1 : 0,
       'category': category.name,
@@ -91,6 +95,7 @@ class TaskModel {
     int? userId,
     String? title,
     String? description,
+    String? location,
     int? priority,
     bool? isCompleted,
     TaskCategory? category,
@@ -102,6 +107,7 @@ class TaskModel {
       userId: userId ?? this.userId,
       title: title ?? this.title,
       description: description ?? this.description,
+      location: location ?? this.location,
       priority: priority ?? this.priority,
       isCompleted: isCompleted ?? this.isCompleted,
       category: category ?? this.category,

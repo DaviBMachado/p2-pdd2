@@ -48,6 +48,7 @@ void main() {
       userId: 1,
       title: 'Ler livro',
       description: 'Capítulo 1',
+      location: 'Biblioteca',
       priority: 3,
       isCompleted: true,
       category: TaskCategory.study,
@@ -64,6 +65,7 @@ void main() {
 
     expect(find.text('ALTA'), findsOneWidget);
     expect(find.text('Faculdade'), findsOneWidget);
+    expect(find.text('Biblioteca'), findsOneWidget);
     expect(find.text('18/11/2026'), findsOneWidget);
     await tester.tap(find.byTooltip('Marcar como pendente'));
     await tester.tap(find.byTooltip('Excluir tarefa'));
@@ -75,13 +77,15 @@ void main() {
 
   testWidgets('TaskForm validates title, defaults to Média/Pendente/Outro, and pre-fills edit', (tester) async {
     String? submittedTitle;
+    String? submittedLocation;
     int? submittedPriority;
     bool? submittedCompleted;
     TaskCategory? submittedCategory;
 
     await tester.pumpWidget(_wrap(TaskForm(
-      onSubmit: (title, _, priority, isCompleted, category) {
+      onSubmit: (title, _, location, priority, isCompleted, category) {
         submittedTitle = title;
+        submittedLocation = location;
         submittedPriority = priority;
         submittedCompleted = isCompleted;
         submittedCategory = category;
@@ -92,12 +96,14 @@ void main() {
     await tester.pump();
     expect(find.text('Informe o título da tarefa'), findsOneWidget);
 
-    await tester.enterText(find.byType(TextFormField).first, '  Nova tarefa  ');
+    await tester.enterText(find.byType(TextFormField).at(0), '  Nova tarefa  ');
+    await tester.enterText(find.byType(TextFormField).at(1), '  Escritório  ');
     await tester.tap(find.text('Trabalho'));
     await tester.pump();
     await tester.tap(find.text('Salvar'));
     await tester.pump();
     expect(submittedTitle, 'Nova tarefa');
+    expect(submittedLocation, 'Escritório');
     expect(submittedPriority, 2);
     expect(submittedCompleted, isFalse);
     expect(submittedCategory, TaskCategory.work);
@@ -107,6 +113,7 @@ void main() {
       userId: 1,
       title: 'Existente',
       description: 'Desc',
+      location: 'Sala 10',
       priority: 3,
       isCompleted: true,
       category: TaskCategory.personal,
@@ -118,9 +125,10 @@ void main() {
       key: const ValueKey('edit'),
       initialTask: existing,
       isLoading: true,
-      onSubmit: (_, _, _, _, _) {},
+      onSubmit: (_, _, _, _, _, _) {},
     )));
     expect(find.text('Existente'), findsOneWidget);
+    expect(find.text('Sala 10'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 }

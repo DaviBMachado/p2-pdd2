@@ -10,6 +10,7 @@ class TaskForm extends StatefulWidget {
   final void Function(
     String title,
     String? description,
+    String? location,
     int priority,
     bool isCompleted,
     TaskCategory category,
@@ -30,6 +31,7 @@ class _TaskFormState extends State<TaskForm> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _titleController;
   late final TextEditingController _descriptionController;
+  late final TextEditingController _locationController;
   late int _priority;
   late bool _isCompleted;
   late TaskCategory _category;
@@ -47,6 +49,9 @@ class _TaskFormState extends State<TaskForm> {
     _descriptionController = TextEditingController(
       text: widget.initialTask?.description ?? '',
     );
+    _locationController = TextEditingController(
+      text: widget.initialTask?.location ?? '',
+    );
     _priority = widget.initialTask?.priority ?? 2;
     _isCompleted = widget.initialTask?.isCompleted ?? false;
     _category = widget.initialTask?.category ?? TaskCategory.other;
@@ -56,6 +61,7 @@ class _TaskFormState extends State<TaskForm> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    _locationController.dispose();
     super.dispose();
   }
 
@@ -66,9 +72,11 @@ class _TaskFormState extends State<TaskForm> {
     }
     final title = _titleController.text.trim();
     final desc = _descriptionController.text.trim();
+    final location = _locationController.text.trim();
     widget.onSubmit(
       title,
       desc.isEmpty ? null : desc,
+      location.isEmpty ? null : location,
       _priority,
       _isCompleted,
       _category,
@@ -93,6 +101,15 @@ class _TaskFormState extends State<TaskForm> {
             validator: (value) => (value == null || value.trim().isEmpty)
                 ? 'Informe o título da tarefa'
                 : null,
+          ),
+          const SizedBox(height: AppTheme.spacingMd),
+          CustomTextField(
+            controller: _locationController,
+            label: 'Local (opcional)',
+            hint: 'Ex.: Biblioteca, Escritório, Casa...',
+            maxLength: 100,
+            prefixIcon: Icons.location_on_outlined,
+            textInputAction: TextInputAction.next,
           ),
           const SizedBox(height: AppTheme.spacingMd),
           CustomTextField(

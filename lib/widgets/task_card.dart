@@ -111,6 +111,29 @@ class TaskCard extends StatelessWidget {
                           ),
                         ),
                       ],
+                      if (task.location.trim().isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.location_on_outlined,
+                              size: 14,
+                              color: AppColors.text,
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                task.location,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: textTheme.bodySmall?.copyWith(
+                                  decoration: decoration,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                       const SizedBox(height: AppTheme.spacingSm),
                       Wrap(
                         spacing: AppTheme.spacingSm,

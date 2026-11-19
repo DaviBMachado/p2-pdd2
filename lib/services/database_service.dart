@@ -32,7 +32,7 @@ class DatabaseService {
 
     return openDatabase(
       path,
-      version: 2,
+      version: 3,
       onConfigure: _onConfigure,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
@@ -63,6 +63,7 @@ class DatabaseService {
         user_id INTEGER NOT NULL,
         title TEXT NOT NULL,
         description TEXT NOT NULL DEFAULT '',
+        location TEXT NOT NULL DEFAULT '',
         priority INTEGER NOT NULL DEFAULT 2,
         is_completed INTEGER NOT NULL DEFAULT 0,
         category TEXT NOT NULL DEFAULT 'other',
@@ -80,6 +81,11 @@ class DatabaseService {
     if (oldVersion < 2) {
       await db.execute(
         "ALTER TABLE tasks ADD COLUMN category TEXT NOT NULL DEFAULT 'other'",
+      );
+    }
+    if (oldVersion < 3) {
+      await db.execute(
+        "ALTER TABLE tasks ADD COLUMN location TEXT NOT NULL DEFAULT ''",
       );
     }
   }

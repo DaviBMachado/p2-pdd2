@@ -28,6 +28,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
   Future<void> _handleSubmit(
     String title,
     String? description,
+    String? location,
     int priority,
     bool isCompleted,
     TaskCategory category,
@@ -40,6 +41,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
         final updated = widget.task!.copyWith(
           title: title,
           description: description ?? '',
+          location: location ?? '',
           priority: priority,
           isCompleted: isCompleted,
           category: category,
@@ -52,6 +54,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
             userId: widget.userId,
             title: title,
             description: description ?? '',
+            location: location ?? '',
             priority: priority,
             isCompleted: isCompleted,
             category: category,
